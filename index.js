@@ -1,4 +1,6 @@
 import 'dotenv/config'
+import './modules/servers';
+import './db';
 import webSocket from 'ws';
 import onConnect from './handlers/connect';
 
