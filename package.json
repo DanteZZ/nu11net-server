@@ -1,0 +1,28 @@
+{
+  "name": "h4ckit_server",
+  "version": "1.0.0",
+  "description": "h4ckit_server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r esm index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanteZZ/h4ckit_server.git"
+  },
+  "author": "DanteZZ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DanteZZ/h4ckit_server/issues"
+  },
+  "homepage": "https://github.com/DanteZZ/h4ckit_server#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "esm": "^3.2.25",
+    "ws": "^8.5.0"
+  },
+  "optionalDependencies": {
+    "utf-8-validate": "^5.0.9"
+  }
+}
