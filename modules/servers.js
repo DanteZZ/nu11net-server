@@ -22,6 +22,7 @@ if (!global.Servers) {
                     });
                 };
             };
+            global.USED_IPS = this.ips;
             this.startServers();
         }
 
