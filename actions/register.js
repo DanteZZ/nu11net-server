@@ -45,7 +45,6 @@ export const register = async (client,payload,response) => {
                 status = 401;
             }
         } catch (e) {
-            console.log(e);
             status = 402;
         };
     } else {
