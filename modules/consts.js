@@ -1,6 +1,7 @@
 const CMD_GETSRVINFO = "get_server_info";
 const CMD_REGISTER = "register";
 const CMD_AUTH = "auth";
+const CMD_SEND_PACKAGE = "send_package";
 
 const TYPE_SIMPLE = "simple";
 const TYPE_RESPONSABLE = "responsable";
@@ -10,6 +11,7 @@ export {
     CMD_GETSRVINFO,
     CMD_REGISTER,
     CMD_AUTH,
+    CMD_SEND_PACKAGE,
 
     TYPE_SIMPLE,
     TYPE_RESPONSABLE,

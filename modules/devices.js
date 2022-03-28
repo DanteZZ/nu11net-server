@@ -17,10 +17,27 @@ const genStartInf = () => {
             priority:[]
         },
         interfaces:{}
-    }
+    };
+    const socket = {
+        type:"network_socket",
+        name:"Интернет розетка",
+        position:{x:140,y:755},
+        interfaces:{}
+    };
+
     const pcHash = genHash(); // Компьютер
     const ethHash = genHash(); // Порт компа
-    const inEthHash = genHash(); // Порт интернета
+    const socketHash = genHash(); // Интернет розетка
+    const socketEthHash = genHash(); // Порт интернета
+
+    const cableHash = genHash(); // Интернет-кабель
+
+    socket.interfaces = {
+        [socketEthHash]:{
+            type:"ethernet",
+            mac:genMac()
+        },
+    };
 
     pc.interfaces = {
         [ethHash]:{
@@ -42,7 +59,12 @@ const genStartInf = () => {
         }
     };
 
+    res.cables[cableHash] = {type:"twistedpair"};
+    res.connections[cableHash] = [`${pcHash}#${ethHash}`,`${socketHash}#${socketEthHash}`];
+
     res.devices[pcHash] = pc;
+    res.devices[socketHash] = socket;
+
     return res;
 };
 
