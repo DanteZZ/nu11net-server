@@ -1,6 +1,7 @@
 import db from "../db";
 import bcrypt from "bcrypt";
 import { genStartInf } from "../modules/devices";
+import Servers from "../modules/servers";
 
 const genIp = () => {
     return (Math.floor(Math.random() * 255) + 1)+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255))+"."+(Math.floor(Math.random() * 255));
@@ -10,7 +11,7 @@ const isUsed = (ip) => {
     if (["127","192","10"].indexOf(ip.split(".")[0]) >=0) {
         return true;
     };
-    if (global.USED_IPS.indexOf(ip) >=0) {
+    if ((global.USED_IPS.indexOf(ip) >=0) && (parseInt(ip.split(".")[3]) !== Servers.GATEWAY.gateway_octet)) {
         return true;
     }
     return false;

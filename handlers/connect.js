@@ -19,7 +19,6 @@ const clientBlank = {
 
 const onMessage = (client,message) => {
     const msg = JSON.parse(message);
-    console.log(msg);
     switch (msg.type) {
         case TYPE_RESPONSE: // Проверка ответов
             if (this.pool_last[msg.response_id]) {
