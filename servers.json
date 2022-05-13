@@ -1,0 +1,9 @@
+{
+    "gateway":{
+        "gateway":true,
+        "default_octet":1,
+        "dhcp_port":67,
+        "port":53,
+        "dns":"88.88.88.88"
+    }
+}
