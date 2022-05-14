@@ -1,11 +1,16 @@
 {
   "name": "h4ckit_server",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "description": "h4ckit_server",
   "main": "index.js",
   "scripts": {
     "start": "node -r esm index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "standard-version",
+		"release:minor": "standard-version --release-as minor",
+		"release:patch": "standard-version --release-as patch",
+		"release:major": "standard-version --release-as major",
+		"release:push": "git push --follow-tags origin dev"
   },
   "repository": {
     "type": "git",
@@ -29,5 +34,8 @@
   },
   "optionalDependencies": {
     "utf-8-validate": "^5.0.9"
+  },
+  "devDependencies": {
+    "standard-version": "^9.3.2"
   }
 }
