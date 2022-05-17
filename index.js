@@ -5,6 +5,7 @@ import md5 from "md5"
 import webSocket from 'ws';
 import onConnect from './handlers/connect';
 import fs from 'fs';
+import { getStorageFile } from './actions/get_storage_file';
 
 const { SERVER_PORT } = process.env;
 

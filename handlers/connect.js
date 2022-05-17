@@ -3,6 +3,8 @@ import onCommand from "./command";
 import _ from "lodash";
 import { TYPE_RESPONSABLE, TYPE_RESPONSE, TYPE_SIMPLE } from "../modules/consts";
 
+import { serialize } from "bson"
+
 let num = 0;
 const clients = [];
 global.users = {};
@@ -27,7 +29,7 @@ const onMessage = (client,message) => {
             }
         break;
         case TYPE_RESPONSABLE: // Проверка с запросом ответов
-            onCommand(client,msg.command,msg.payload,(payload,command=null)=>{client.sendResponse(command,payload,msg.response_id)})
+            onCommand(client,msg.command,msg.payload,(payload,command=null,type="json")=>{client.sendResponse(command,payload,msg.response_id,type)})
         break;
         case TYPE_SIMPLE: // Проверка но обычные
             onCommand(client,msg.command,msg.payload,(payload,command=null)=>{client.sendCommand(command,payload)})
@@ -54,8 +56,9 @@ const onConnect = (client) => {
         client.send(JSON.stringify({command,payload,type:TYPE_SIMPLE}))
     };
 
-    client.sendResponse = (command,payload,response_id) => {
-        client.send(JSON.stringify({command,payload,response_id,type:TYPE_RESPONSE}))
+    client.sendResponse = (command,payload,response_id,type) => {
+        const msg = {command,payload,response_id,type:TYPE_RESPONSE};
+        client.send(type == "json" ? JSON.stringify(msg) : serialize(msg));
     };
 
     client.sendResponsableCommand = (command,payload,timeout=10) => new Promise((res,rej)=>{

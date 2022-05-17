@@ -7,10 +7,10 @@
     "start": "node -r esm index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "release": "standard-version",
-		"release:minor": "standard-version --release-as minor",
-		"release:patch": "standard-version --release-as patch",
-		"release:major": "standard-version --release-as major",
-		"release:push": "git push --follow-tags origin dev"
+    "release:minor": "standard-version --release-as minor",
+    "release:patch": "standard-version --release-as patch",
+    "release:major": "standard-version --release-as major",
+    "release:push": "git push --follow-tags origin dev"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
   "homepage": "https://github.com/DanteZZ/h4ckit_server#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "bson": "^4.6.3",
     "dotenv": "^16.0.0",
     "esm": "^3.2.25",
     "fs": "0.0.1-security",

@@ -47,6 +47,7 @@ const genStartInf = () => {
         [genHash()]:{
             type:"storage",
             size:2048,
+            _template:"hios",
             boot_file:"kernel/init"
         },
         [genHash()]:{
