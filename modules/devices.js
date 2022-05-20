@@ -7,7 +7,7 @@ const genMac = () => "XX:XX:XX:XX:XX:XX".replace(/X/g, function () {
 const genHash = () => md5(Math.random().toString(36).substring(7))
 
 const genStartInf = () => {
-    const res = { devices: {}, cables: {}, connections: {} };
+    const res = { devices: {}, cables: {}, connections: {}, portables: {} };
     const pc = {
         type: "pc",
         name: "Компьютер",
@@ -29,6 +29,8 @@ const genStartInf = () => {
     const ethHash = genHash(); // Порт компа
     const socketHash = genHash(); // Интернет розетка
     const socketEthHash = genHash(); // Порт интернета
+    const usbPortHash = genHash(); // USB Порт
+    const usbStorageHash = genHash(); // Usb устройство
 
     const cableHash = genHash(); // Интернет-кабель
 
@@ -43,6 +45,9 @@ const genStartInf = () => {
         [ethHash]: {
             type: "ethernet",
             mac: genMac()
+        },
+        [usbPortHash]: {
+            type: "usb"
         },
         [genHash()]: {
             type: "storage",
@@ -59,6 +64,16 @@ const genStartInf = () => {
             type: "input"
         }
     };
+
+
+
+    res.portables = { //Portable USB storage
+        [usbStorageHash]: {
+            type: "usb_storage",
+            map_type: "clean",
+            connection: `${pcHash}#${usbPortHash}`
+        }
+    }
 
     res.cables[cableHash] = { type: "twistedpair" };
     res.connections[cableHash] = [`${pcHash}#${ethHash}`, `${socketHash}#${socketEthHash}`];
