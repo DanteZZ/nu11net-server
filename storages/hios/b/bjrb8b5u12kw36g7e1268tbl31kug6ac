@@ -33,7 +33,7 @@ _initialize = async () => {
     
     const attrPath = _process.__attributes?.[0] || false;
     if (attrPath) {
-      path = isAbsolute(attrPath) ? attrPath : buildPath([_path,attrPath]);
+      path = isAbsolute(attrPath) ? attrPath : buildPath([attrPath], _path);
       const has = await openFile(path);
       if (!has) { changed = true; }
     }

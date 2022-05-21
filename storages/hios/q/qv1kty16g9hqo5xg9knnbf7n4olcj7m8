@@ -17,7 +17,7 @@ _initialize = async () => {
 
     let path = _path;
     if (attrPath) {
-        path = isAbsolute(attrPath) ? attrPath : buildPath([_path,attrPath]);
+        path = isAbsolute(attrPath) ? attrPath : buildPath([attrPath], _path);
     }
 
     const isDir = await fs.isDir(buildPath([path,".."]));

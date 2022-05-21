@@ -1,3 +1,5 @@
+/* VM LIB */
+
 exports = async () => {
 	return {
 		sendCommand:_os.___k().sendCommand,
