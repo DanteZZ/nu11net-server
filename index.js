@@ -1,33 +1,12 @@
-import 'dotenv/config'
-import './modules/servers';
-import './db';
-import md5 from "md5"
-import webSocket from 'ws';
-import onConnect from './handlers/connect';
-import fs from 'fs';
+require("dotenv/config");
+require("@babel/core").transformSync("code", {
+  plugins: ["@babel/plugin-transform-modules-commonjs"],
+});
+require("@babel/register")({
+  presets: [["@babel/preset-env"], ["@babel/preset-react"]],
+});
 
-const { SERVER_PORT } = process.env;
-
-const init = async () => {
-    try {
-        await checkHash();
-        const server = new webSocket.Server({port: SERVER_PORT});
-        server.on('connection', onConnect);
-        console.log(`[Server is started]`);
-        console.log(`Port: ${SERVER_PORT}`);
-    } catch (e) {
-        console.log(e);
-    }
-}
-
-const checkHash = async () => {
-    if (fs.existsSync("./.hash") && fs.lstatSync("./.hash").isFile()) {
-        global.SERVER_UNIQUE_HASH = fs.readFileSync("./.hash","utf8");
-    } else {
-        global.SERVER_UNIQUE_HASH = md5(Date.now());
-        fs.writeFileSync("./.hash",global.SERVER_UNIQUE_HASH)
-    };
-    return true;
-}
-
-init();
+require("./modules/logger.js");
+require("./modules/requestLogger.js");
+require("./server.js");
+require("./gui");

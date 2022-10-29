@@ -61,7 +61,6 @@ typings/
 
 # Optional REPL history
 .node_repl_history
-
 # Output of 'npm pack'
 *.tgz
 
@@ -80,6 +79,7 @@ typings/
 # Nuxt.js build / generate output
 .nuxt
 dist
+.hash
 
 # Gatsby files
 .cache/
