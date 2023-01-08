@@ -5,6 +5,7 @@ var server, http, client = null;
 _initialize = async () => {
 	server = await _import("libs/server");
 	http = new server(8080,receiver);
+	_std.write("[Чат]")
 	client = await _std.prompt("[33mВведите адрес клиента>");
 	_std.write("Подключен к [33m"+client);
 	chat();

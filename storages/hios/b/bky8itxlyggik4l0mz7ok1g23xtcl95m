@@ -1,6 +1,12 @@
 /* IMPORTS */
 
-var ansi2html, _input, gui, _prompt, _gr, __path = null;
+var ansi2html,
+    _input,
+    gui,
+    _prompt,
+    _gr,
+    csl,
+    __path = null;
 var historyPoint = 0;
 
 let { screen, CLI } = _process.getOutOwn();
@@ -26,44 +32,43 @@ _screenOwnHandler = (proc) => {
         } else {
             screen.setScreen(gui.wrapper);
             gui.input.focus();
-        };
+        }
     });
     screen = null;
     return true;
-}
+};
 
-_initialize = async () => {
+_initialize = async (console) => {
+    csl = console;
     ansi2html = await _import("libs/ansi");
     _input = await _import("libs/input");
     _gr = await _import("libs/graphic");
     __path = await _import("libs/path");
-
     gui = await _createGraphic();
     if (!screen) {
         _process.exit();
         return false;
     } else {
         await screen.setScreen(gui.wrapper);
-    };
+    }
     _registerLogic(gui);
     onPrintUpdate(gui);
-}
+};
 
 _exiting = async () => {
-    _input.unlistEvent("keydown", onKeyDownGlobal)
-    _.wrapper.unlistEvent("submit", onSubmit)
-    _.print.unlistEvent("wheel", onWheel)
-    _.input.unlistEvent("blur", onBlur)
-    _.input.unlistEvent("focus", onFocus)
-    CLI.unlistEvent("update", onUpdate)
-    CLI.unlistEvent("prompt", onPrompt)
-}
-
+    _input.removeListener("keydown", onKeyDownGlobal);
+    _.wrapper.unlistEvent("submit", onSubmit);
+    _.print.unlistEvent("wheel", onWheel);
+    _.input.unlistEvent("blur", onBlur);
+    _.input.unlistEvent("focus", onFocus);
+    CLI.unlistEvent("update", onUpdate);
+    CLI.unlistEvent("prompt", onPrompt);
+};
 
 /* HANDLERS */
 
 const onInputSend = async (_) => {
-    const str = _.input.getParam("value")
+    const str = _.input.getParam("value");
     if (_prompt) {
         CLI.sendPrompt(str);
         _prompt = null;
@@ -72,33 +77,35 @@ const onInputSend = async (_) => {
         let attributes = str.split(" ");
         const command = attributes.shift();
         await CLI.runCommand(command, attributes);
-    };
+    }
     updateHistoryPoint();
-}
+};
 
 const onPrintUpdate = (_) => {
-    const html = CLI.$PRINT.map(e => ansi2html(e.msg)).join("\n")
-    const prefix = ansi2html(_prompt || `[32mroot@${CLI.$PCNAME}[0m:[34m${CLI.$PATH}[0m$`)
+    const html = CLI.$PRINT.map((e) => ansi2html(e.msg)).join("\n");
+    const prefix = ansi2html(
+        _prompt || `[32mroot@${CLI.$PCNAME}[0m:[34m${CLI.$PATH}[0m$`
+    );
     _.print.putHtml(html);
     _.print.setParam("scrollTop", _.print.getParam("scrollHeight"));
     _.input_prefix.putHtml(prefix);
     if (!CLI.$RUNNING || _prompt) {
-        setBlockInput(_, false)
+        setBlockInput(_, false);
     } else {
-        setBlockInput(_, true)
+        setBlockInput(_, true);
     }
-}
+};
 
 const setBlockInput = (_, a) => {
-    isBlocked = a
+    isBlocked = a;
     if (a) {
         _.input.blur();
         _.input_wrapper.setStyles({ opacity: 0 });
     } else {
         _.input.focus();
         _.input_wrapper.setStyles({ opacity: 1 });
-    };
-}
+    }
+};
 
 /* FUNCS */
 
@@ -109,122 +116,132 @@ const getHelp = async () => {
     if (!__path.isAbsolute(p)) {
         absolute = false;
         p = __path.buildPath(
-            [
-                p,
-                (
-                    __path.isEnding(p) && p.length > 1
-                        ? "/"
-                        : "."
-                )
-            ],
+            [p, __path.isEnding(p) && p.length > 1 ? "/" : "."],
             CLI.$PATH
         );
-    };
+    }
 
     if (!__path.isEnding(p)) {
         p = p.split("/");
         search = p.pop();
         p = __path.buildPath(p);
-    };
+    }
 
     let res = await CLI.getHelps(__path.buildPath([p]));
 
     if (search && res) {
-        res = res.find(e => e.substr(0, search.length) == search);
-        res = __path.buildPath([p, (res || search)])
+        res = res.find((e) => e.substr(0, search.length) == search);
+        res = __path.buildPath([p, res || search]);
     } else if (res) {
         res = __path.buildPath([p, res[0]]);
     } else {
         res = p;
-    };
+    }
 
     const endres = gui.input.getParam("value").split(" ");
     endres.pop();
     endres.push(res);
 
-    gui.input.setParam("value", endres.join(" ")
-        .replace(absolute ? "" : "/" + __path.encodePath(CLI.$PATH) + "/", "")
-        .replace(absolute ? "" : "/" + __path.encodePath(CLI.$PATH), ""));
-}
+    gui.input.setParam(
+        "value",
+        endres
+            .join(" ")
+            .replace(
+                absolute ? "" : "/" + __path.encodePath(CLI.$PATH) + "/",
+                ""
+            )
+            .replace(absolute ? "" : "/" + __path.encodePath(CLI.$PATH), "")
+    );
+};
 
 const updateHistoryPoint = (up = null) => {
-    if (up === null) { // clear
+    if (up === null) {
+        // clear
         historyPoint = CLI?.$HISTORY.length;
-    } else if (up === true) { // up
+    } else if (up === true) {
+        // up
         historyPoint -= 1;
-    } else { // down
+    } else {
+        // down
         historyPoint += 1;
     }
-    if (historyPoint > CLI?.$HISTORY.length) { historyPoint = CLI?.$HISTORY.length; }
-    if (historyPoint < 0) { historyPoint = 0 };
-
-    gui.input.setParam("value", CLI?.$HISTORY?.[historyPoint] || "");
-}
-
-const onKeyDownGlobal = e => {
-    if (screen && !_prompt) {
-        const key = e.which || e.keyCode;
-        const ctrl = e.ctrlKey ? e.ctrlKey : ((key === 17) ? true : false);
-        if (key === 67 && ctrl) { // CTRL + C
-            CLI.abort();
-            e.preventDefault();
-        };
-
-        if (key === 9) { // TAB
-            getHelp();
-            e.preventDefault();
-        };
-
-        if (key === 38) { // UP
-            updateHistoryPoint(true);
-            e.preventDefault();
-        };
-
-        if (key === 40) { // DOWN
-            updateHistoryPoint(false);
-            e.preventDefault();
-        };
+    if (historyPoint > CLI?.$HISTORY.length) {
+        historyPoint = CLI?.$HISTORY.length;
+    }
+    if (historyPoint < 0) {
+        historyPoint = 0;
     }
 
-}
-const onSubmit = e => {
+    gui.input.setParam("value", CLI?.$HISTORY?.[historyPoint] || "");
+};
+
+const onKeyDownGlobal = (e) => {
+    if (screen && !_prompt) {
+        const key = e.which || e.keyCode;
+        const ctrl = e.ctrlKey ? e.ctrlKey : key === 17 ? true : false;
+        if (key === 67 && ctrl) {
+            // CTRL + C
+            CLI.abort();
+            e.preventDefault();
+        }
+
+        if (key === 9) {
+            // TAB
+            getHelp();
+            e.preventDefault();
+        }
+
+        if (key === 38) {
+            // UP
+            updateHistoryPoint(true);
+            e.preventDefault();
+        }
+
+        if (key === 40) {
+            // DOWN
+            updateHistoryPoint(false);
+            e.preventDefault();
+        }
+    }
+};
+const onSubmit = (e) => {
     if (!isBlocked) {
         onInputSend(gui);
         e.preventDefault();
     }
-}
+};
 const onWheel = () => {
     const delta = e.deltaY || e.detail || e.wheelDelta;
     gui.print.setParam("scrollTop", gui.print.getParam("scrollTop") + delta);
     e.preventDefault();
-}
+};
 const onBlur = () => {
     if (!isBlocked) {
         gui.input.focus();
     }
-}
+};
 const onFocus = () => {
     if (isBlocked) {
         gui.input.blur();
     }
-}
+};
 const onUpdate = () => {
     onPrintUpdate(gui);
-}
+};
 const onPrompt = (text) => {
     _prompt = text;
     onUpdate();
-}
+};
 
 const _registerLogic = (_) => {
-    _input.listEvent("keydown", onKeyDownGlobal)
-    _.wrapper.listEvent("submit", onSubmit)
-    _.print.listEvent("wheel", onWheel)
-    _.input.listEvent("blur", onBlur)
-    _.input.listEvent("focus", onFocus)
-    CLI.listEvent("update", onUpdate)
-    CLI.listEvent("prompt", onPrompt)
-}
+    _input.on("keydown", onKeyDownGlobal);
+    _.wrapper.listEvent("submit", onSubmit);
+    _.print.listEvent("wheel", onWheel);
+    _.input.listEvent("blur", onBlur);
+    _.input.listEvent("focus", onFocus);
+    CLI.listEvent("update", onUpdate);
+    CLI.listEvent("prompt", onPrompt);
+};
 
 const _createGraphic = async () => {
     const _ = {
@@ -232,9 +249,8 @@ const _createGraphic = async () => {
         print: await _gr.createElement("pre"),
         input_wrapper: await _gr.createElement("div"),
         input_prefix: await _gr.createElement("div"),
-        input: await _gr.createElement("input")
+        input: await _gr.createElement("input"),
     };
-
 
     // putting elements
     _.input_wrapper.putElement(_.input_prefix);
@@ -250,29 +266,29 @@ const _createGraphic = async () => {
         "flex-direction": "column",
         padding: "8px",
         color: "#f7f7f7",
-        "background-color": "#151515"
+        "background-color": "#151515",
     });
     _.print.setStyles({
         overflow: "hidden",
         color: "#d6d5d4",
-        "white-space": "pre-wrap"
+        "white-space": "pre-wrap",
     });
     _.input_wrapper.setStyles({
         display: "flex",
-        "padding-top": "4px"
+        "padding-top": "4px",
     });
     _.input_prefix.setStyles({
-        "margin-right": "8px"
+        "margin-right": "8px",
     });
     _.input.setStyles({
         "flex-grow": 1,
         "font-size": "1em",
         padding: "0px",
-        "caret-color": "#d6d5d4"
+        "caret-color": "#d6d5d4",
     });
 
     // properties
 
     _.input.setAttribute("autofocus", "autofocus");
     return _;
-}
+};
